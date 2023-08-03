@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Card } from "primereact/card";
+import AccountsForm from "../components/AccountsForm";
 import { Account, ITableRow } from "../types";
 
 function App() {
@@ -8,9 +9,11 @@ function App() {
   const [tableData, setTableData] = useState<ITableRow[]>([]);
   return (
     <div className="flex w-screen h-screen">
-      <Card title="Account Input" className="h-full w-4 mx-2"></Card>
+      <Card title="Account Input" className="w-4 m-2">
+        <AccountsForm formController={{accounts, setAccounts}} />
+      </Card>
 
-      <Card title="Snowball Amoritization" className="h-full w-8 mx-2"></Card>
+      <Card title="Snowball Amoritization" className=" w-8 m-2"></Card>
     </div>
   );
 }
