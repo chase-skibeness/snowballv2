@@ -14,9 +14,22 @@ export class Liability {
     apr > 1 ? (this.apr = apr / 100) : (this.apr = apr);
     this.name = name;
   }
+
+  applyAPR() {
+    this.principalOwed =
+      this.principalOwed + (this.apr / 12) * this.principalOwed;
+  }
+
+  applyMinPayment() {
+    this.principalOwed -= this.minPayment;
+  }
+
+  applyPayment(payment: number) {
+    this.principalOwed -= payment;
+  }
 }
 
-enum SortType {
+export enum SortType {
   "highMinPayment",
   "lowPrincipal",
   "highAPR",

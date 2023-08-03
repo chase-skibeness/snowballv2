@@ -4,7 +4,7 @@ import { Account, ITableRow } from "../types";
 
 function App() {
   const [formData, setFormData] = useState<any>([]);
-  const [accounts, setAccounts] = useState<Account>();
+  const [accounts, setAccounts] = useState<Account>(new Account());
   const [tableData, setTableData] = useState<ITableRow[]>([]);
   return (
     <div className="flex w-screen h-screen">
