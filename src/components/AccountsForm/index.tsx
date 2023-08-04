@@ -147,6 +147,7 @@ export default function AccountsForm({
             }
             placeholder="What is the interest rate?"
             className={aprInput.invalid ? "p-invalid" : ""}
+            maxFractionDigits={2}
           />
         </div>
         <div className="my-4">
