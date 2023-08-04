@@ -16,7 +16,7 @@ function App() {
         .map((liability) => liability.principal)
         .reduce((prev, curr) => (curr += prev));
     }
-  }, [account]);
+  }, [account, account.liabilities]);
 
   console.log(account);
   return (

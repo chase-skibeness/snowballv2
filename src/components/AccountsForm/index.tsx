@@ -64,7 +64,7 @@ export default function AccountsForm({
       result = false;
     }
     if (
-      aprInput.value != null ||
+      aprInput.value === null ||
       (aprInput.value < 1 && aprInput.value > 0) ||
       aprInput.value < 0
     ) {
@@ -154,7 +154,7 @@ export default function AccountsForm({
             label="Add Account"
             onClick={() => {
               if (checkValidInput()) {
-                const _account = account;
+                const _account = { ...account };
                 _account.liabilities.push(
                   new Liability(
                     nameInput.value,
