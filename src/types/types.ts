@@ -23,12 +23,20 @@ export class Liability {
   }
 }
 
+export enum SortType {
+  highAPR,
+  lowPrincipal,
+  lowPrincipalPaymentRatio,
+  highMinPayment,
+}
+
 export class Account {
   liabilities: Liability[];
   totalDebt: number;
   extraPayment: number;
   snowballBonus: number;
   id: string;
+  sortType: SortType;
 
   constructor() {
     this.liabilities = [];
@@ -36,5 +44,6 @@ export class Account {
     this.extraPayment = 0;
     this.snowballBonus = 0;
     this.id = uniqid();
+    this.sortType = SortType.lowPrincipal;
   }
 }

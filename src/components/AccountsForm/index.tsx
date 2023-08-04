@@ -2,7 +2,8 @@ import { useState, useRef } from "react";
 import { InputNumber } from "primereact/inputnumber";
 import { Divider } from "primereact/divider";
 import { Button } from "primereact/button";
-import { Account, Liability } from "../../types/types";
+import { Dropdown } from "primereact/dropdown";
+import { Account, Liability, SortType } from "../../types/types";
 
 interface AccountsFormProps {
   account: Account;
@@ -33,6 +34,16 @@ export default function AccountsForm({
     invalid: false,
   };
 
+  const sortOptions = [
+    { name: "Low Principal", code: SortType.lowPrincipal },
+    { name: "High APR", code: SortType.highAPR },
+    { name: "High Minimum Payment", code: SortType.highMinPayment },
+    {
+      name: "Principal To Payment Ratio",
+      code: SortType.lowPrincipalPaymentRatio,
+    },
+  ];
+
   const [nameInput, setName] = useState<StringFormField>(blankStringFormField);
   const [principalInput, setPrincipal] =
     useState<NumberFormField>(blankNumberFormField);
@@ -41,6 +52,10 @@ export default function AccountsForm({
   const [aprInput, setAPR] = useState<NumberFormField>(blankNumberFormField);
   const [surplusPaymentInput, setSurplusPayment] =
     useState<NumberFormField>(blankNumberFormField);
+  const [selectedSortMethod, setSelectedSortMethod] = useState<{
+    name: String;
+    code: SortType;
+  }>(sortOptions[0]);
 
   const resetFields = () => {
     setName(blankStringFormField);
@@ -93,7 +108,6 @@ export default function AccountsForm({
             }`}
             placeholder="What would you like to call this debt?"
           />
-          <Divider />
         </div>
         <div className="my-4">
           <label
@@ -173,27 +187,44 @@ export default function AccountsForm({
         </div>
       </div>
       <Divider />
-      <div className="my-6">
-        <label htmlFor="surplusPayment" className="font-bold block mb-2">
-          Extra Payment per month
-        </label>
-        <InputNumber
-          inputId="surplusPayment"
-          value={surplusPaymentInput.value}
-          onValueChange={(e) => {
-            if (surplusPaymentInput.value < 0) {
-              setSurplusPayment({ ...surplusPaymentInput, invalid: true });
-            } else {
-              setAccount({ ...account, extraPayment: e.target.value });
-              setSurplusPayment({ ...surplusPaymentInput, invalid: false });
-            }
-          }}
-          mode="currency"
-          currency="USD"
-          locale="en-US"
-          placeholder="ex. $100 extra towards debt"
-          className={surplusPaymentInput.invalid ? "p-invalid" : ""}
-        />
+      <div className="flex flex-column gap-4 w-full">
+        <div>
+          <label htmlFor="methodSelect" className="font-bold block mb-2">
+            Snowball Method
+          </label>
+          <Dropdown
+            inputId="methodSelect"
+            value={selectedSortMethod}
+            onChange={(e) => {
+              console.log(e.value);
+              setSelectedSortMethod(e.value);
+            }}
+            options={sortOptions}
+            optionLabel="name"
+          />
+        </div>
+        <div>
+          <label htmlFor="surplusPayment" className="font-bold block mb-2">
+            Extra Payment per month
+          </label>
+          <InputNumber
+            inputId="surplusPayment"
+            value={surplusPaymentInput.value}
+            onValueChange={(e) => {
+              if (surplusPaymentInput.value < 0) {
+                setSurplusPayment({ ...surplusPaymentInput, invalid: true });
+              } else {
+                setAccount({ ...account, extraPayment: e.target.value });
+                setSurplusPayment({ ...surplusPaymentInput, invalid: false });
+              }
+            }}
+            mode="currency"
+            currency="USD"
+            locale="en-US"
+            placeholder="ex. $100 extra towards debt"
+            className={surplusPaymentInput.invalid ? "p-invalid" : ""}
+          />
+        </div>
       </div>
     </div>
   );
