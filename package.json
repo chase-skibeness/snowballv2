@@ -13,7 +13,7 @@
   "dependencies": {
     "primeflex": "^3.2.1",
     "primeicons": "^6.0.1",
-    "primereact": "^8.6.1",
+    "primereact": "^9.6.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
@@ -30,6 +30,7 @@
     "eslint-plugin-react": "^7.33.1",
     "prettier": "^3.0.0",
     "typescript": "latest",
-    "vite": "latest"
+    "vite": "latest",
+    "uniqid": "^5.4.0"
   }
 }
