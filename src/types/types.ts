@@ -2,7 +2,7 @@ import uniqid from "uniqid";
 
 export class Liability {
   name: string;
-  id: number;
+  id: string;
   principal: number;
   minPayment: number;
   apr: number;

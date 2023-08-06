@@ -20,6 +20,7 @@
   "devDependencies": {
     "@types/react": "latest",
     "@types/react-dom": "latest",
+    "@types/uniqid": "^5.3.2",
     "@typescript-eslint/eslint-plugin": "^6.2.1",
     "@typescript-eslint/parser": "^6.2.1",
     "@vitejs/plugin-react": "latest",
@@ -30,7 +31,7 @@
     "eslint-plugin-react": "^7.33.1",
     "prettier": "^3.0.0",
     "typescript": "latest",
-    "vite": "latest",
-    "uniqid": "^5.4.0"
+    "uniqid": "^5.4.0",
+    "vite": "latest"
   }
 }
