@@ -15,19 +15,26 @@ export function SnowballAmortizationTable({
 
   useEffect(() => {
     if (account.liabilities.length >= 1) {
-      debugger;
-      const __snapshots = [new AccountSnapshot(new Date(), account)];
+      const firstMonth = {
+        date: new Date(),
+        dateStr: `${new Date().getMonth() + 1}/${new Date().getFullYear()}`,
+        ...account,
+      } as AccountSnapshot;
+      firstMonth.liabilities.forEach((liability) => {
+        firstMonth[liability.name] = liability.principal;
+      });
+      const __snapshots = [firstMonth];
       while (__snapshots[__snapshots.length - 1].totalDebt > 0) {
         const prevSnapshot = __snapshots[__snapshots.length - 1];
-        __snapshots.push(
-          new AccountSnapshot(new Date(prevSnapshot.date), prevSnapshot),
-        );
+        __snapshots.push(new AccountSnapshot(prevSnapshot.date, prevSnapshot));
       }
       setSnapshots(__snapshots);
       setAccountKeys(
         Object.keys(__snapshots[0]).filter((key) => {
           switch (key) {
             case "date":
+              return false;
+            case "dateStr":
               return false;
             case "id":
               return false;
@@ -50,8 +57,8 @@ export function SnowballAmortizationTable({
   }, [account]);
 
   return (
-    <DataTable value={snapshots}>
-      <Column field="date" header="Month / Year" />
+    <DataTable value={snapshots} scrollable scrollHeight="90%">
+      <Column field="dateStr" header="Month / Year" />
       {accountKeys.map((accountKey) => (
         <Column field={accountKey} header={accountKey} key={accountKey} />
       ))}

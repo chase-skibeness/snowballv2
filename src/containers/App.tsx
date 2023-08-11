@@ -9,16 +9,6 @@ import { Account, Liability } from "../types/types";
 function App() {
   const [account, setAccount] = useState<Account>(new Account());
 
-  useEffect(() => {
-    if (account.liabilities.length > 0) {
-      const _account = account;
-      _account.totalDebt = account.liabilities
-        .map((liability) => liability.principal)
-        .reduce((prev, curr) => (curr += prev));
-    }
-  }, [account, account.liabilities]);
-
-  console.log(account);
   return (
     <div className="flex w-screen h-screen">
       <Card title="Account Input" className="w-3 m-2">

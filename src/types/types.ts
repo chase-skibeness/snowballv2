@@ -17,7 +17,7 @@ export class Liability {
     this.name = name;
     this.principal = principal;
     this.minPayment = minPayment;
-    this.apr = apr;
+    this.apr = apr / 100;
     this.id = uniqid();
     this.aprStr = `${apr}%`;
   }
@@ -73,14 +73,16 @@ function ratioSortFunc(a: Liability, b: Liability) {
 
 export class AccountSnapshot extends Account {
   [key: string]: any;
-  "date": Date | string;
+  "date": Date;
+  "dateStr": string;
 
   constructor(
     date: Date,
     { liabilities, extraPayment, snowballBonus }: Account,
   ) {
     super();
-    this.date = `${date.getMonth() + 1}/${date.getFullYear()}`;
+    this.date = new Date(date.setMonth(date.getMonth() + 1));
+    this.dateStr = `${date.getMonth() + 1}/${date.getFullYear()}`;
     this.extraPayment = extraPayment;
     this.snowballBonus = snowballBonus;
     liabilities = liabilities.map((liability) => {
@@ -130,6 +132,5 @@ export class AccountSnapshot extends Account {
     this.liabilities.forEach((liability) => {
       this[liability.name] = liability.principal;
     });
-    console.log(this);
   }
 }

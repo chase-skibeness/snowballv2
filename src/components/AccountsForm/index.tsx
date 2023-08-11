@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useEffect } from "react";
 import { InputNumber } from "primereact/inputnumber";
 import { Divider } from "primereact/divider";
 import { Button } from "primereact/button";
@@ -89,6 +89,7 @@ export default function AccountsForm({
 
     return result;
   };
+
   return (
     <div className="card flex flex-wrap gap-3 p-fluid">
       <div className="flex-auto">
@@ -178,6 +179,9 @@ export default function AccountsForm({
                     aprInput.value,
                   ),
                 );
+                _account.totalDebt = account.liabilities
+                  .map((liability) => liability.principal)
+                  .reduce((prev, curr) => (curr += prev));
                 setAccount(_account);
                 resetFields();
               }
@@ -196,7 +200,9 @@ export default function AccountsForm({
             inputId="methodSelect"
             value={selectedSortMethod}
             onChange={(e) => {
-              console.log(e.value);
+              const _account = account;
+              _account.sortType = e.value.code;
+              setAccount(_account);
               setSelectedSortMethod(e.value);
             }}
             options={sortOptions}
@@ -210,12 +216,14 @@ export default function AccountsForm({
           <InputNumber
             inputId="surplusPayment"
             value={surplusPaymentInput.value}
-            onValueChange={(e) => {
+            onValueChange={(e: any) => {
               if (surplusPaymentInput.value < 0) {
-                setSurplusPayment({ ...surplusPaymentInput, invalid: true });
+                setSurplusPayment({ value: e.value, invalid: true });
               } else {
-                setAccount({ ...account, extraPayment: e.target.value });
-                setSurplusPayment({ ...surplusPaymentInput, invalid: false });
+                setSurplusPayment({ value: e.value, invalid: false });
+                const _account = account;
+                _account.extraPayment = e.value;
+                setAccount(_account);
               }
             }}
             mode="currency"
