@@ -77,10 +77,17 @@ export class AccountSnapshot extends Account {
 
   constructor(
     date: Date,
-    { liabilities, totalDebt, extraPayment, snowballBonus }: Account,
+    { liabilities, extraPayment, snowballBonus }: Account,
   ) {
     super();
     this.date = `${date.getMonth() + 1}/${date.getFullYear()}`;
+    this.extraPayment = extraPayment;
+    this.snowballBonus = snowballBonus;
+    liabilities = liabilities.map((liability) => {
+      liability.principal += liability.principal * (liability.apr / 12);
+      liability.principal -= liability.minPayment;
+      return liability;
+    });
     switch (this.sortType) {
       case SortType.highAPR:
         this.liabilities = liabilities.sort(highAPRSortFunc);
@@ -93,11 +100,36 @@ export class AccountSnapshot extends Account {
       default:
         this.liabilities = liabilities.sort(lowPrincipalSortFunc);
     }
-    this.totalDebt = totalDebt;
-    this.extraPayment = extraPayment;
-    this.snowballBonus = snowballBonus;
-    liabilities.forEach((liability) => {
+    // find first liability that's not already paid fully
+    const paymentIndex = this.liabilities.findIndex(
+      (liability) => liability.principal > 0,
+    );
+    if (paymentIndex > 0) {
+      //apply extra payment
+      if (this.extraPayment > this.liabilities[paymentIndex].principal) {
+        this.liabilities[paymentIndex].principal = 0;
+        this.extraPayment += this.liabilities[paymentIndex].minPayment;
+        this.snowballBonus += this.liabilities[paymentIndex].minPayment;
+        const leftovers =
+          this.extraPayment - this.liabilities[paymentIndex].principal;
+        if (leftovers > 0 && this.liabilities[paymentIndex + 1]) {
+          if (this.liabilities[paymentIndex + 1].principal < leftovers) {
+            this.liabilities[paymentIndex + 1].principal = 0;
+          } else {
+            this.liabilities[paymentIndex + 1].principal -= leftovers;
+          }
+        }
+      } else {
+        this.liabilities[paymentIndex].principal -= this.extraPayment;
+      }
+    }
+    this.totalDebt = this.liabilities
+      .map((liability) => liability.principal)
+      .reduce((prev, curr) => (curr += prev));
+
+    this.liabilities.forEach((liability) => {
       this[liability.name] = liability.principal;
     });
+    console.log(this);
   }
 }

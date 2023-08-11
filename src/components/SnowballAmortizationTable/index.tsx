@@ -1,6 +1,7 @@
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Account, AccountSnapshot } from "../../types/types";
+import { useEffect, useState } from "react";
 
 interface SnowballAmortizationTableProps {
   account: Account;
@@ -9,32 +10,44 @@ interface SnowballAmortizationTableProps {
 export function SnowballAmortizationTable({
   account,
 }: SnowballAmortizationTableProps) {
-  const snapshots = [new AccountSnapshot(new Date(), account)];
-  const accountKeys = Object.keys(snapshots[0]).filter((key) => {
-    switch (key) {
-      case "date":
-        return false;
-      case "id":
-        return false;
-      case "totalDebt":
-        return false;
-      case "liabilities":
-        return false;
-      case "extraPayment":
-        return false;
-      case "snowballBonus":
-        return false;
-      case "sortType":
-        return false;
-      default:
-        return true;
-    }
-  });
+  const [snapshots, setSnapshots] = useState<AccountSnapshot[]>([]);
+  const [accountKeys, setAccountKeys] = useState<string[]>([]);
 
-  // create next month
-  // progress date forward one month
-  // apply monthly interest to each principal
-  // subtract
+  useEffect(() => {
+    if (account.liabilities.length >= 1) {
+      debugger;
+      const __snapshots = [new AccountSnapshot(new Date(), account)];
+      while (__snapshots[__snapshots.length - 1].totalDebt > 0) {
+        const prevSnapshot = __snapshots[__snapshots.length - 1];
+        __snapshots.push(
+          new AccountSnapshot(new Date(prevSnapshot.date), prevSnapshot),
+        );
+      }
+      setSnapshots(__snapshots);
+      setAccountKeys(
+        Object.keys(__snapshots[0]).filter((key) => {
+          switch (key) {
+            case "date":
+              return false;
+            case "id":
+              return false;
+            case "totalDebt":
+              return false;
+            case "liabilities":
+              return false;
+            case "extraPayment":
+              return false;
+            case "snowballBonus":
+              return false;
+            case "sortType":
+              return false;
+            default:
+              return true;
+          }
+        }),
+      );
+    }
+  }, [account]);
 
   return (
     <DataTable value={snapshots}>
