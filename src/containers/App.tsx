@@ -1,32 +1,130 @@
-import { useEffect, useState } from "react";
-import { Card } from "primereact/card";
-import { DataTable } from "primereact/datatable";
-import { Column } from "primereact/column";
-import AccountsForm from "../components/AccountsForm";
-import { SnowballAmortizationTable } from "../components/SnowballAmortizationTable";
-import { Account, Liability } from "../types/types";
+import {
+  AppBar,
+  Container,
+  Toolbar,
+  Button,
+  Typography,
+  IconButton,
+  Grid,
+  Card,
+  Input,
+} from "@mui/material";
+import {
+  useState,
+  useEffect,
+  useRef,
+  BaseSyntheticEvent,
+  MutableRefObject,
+} from "react";
+import { Upload, Download, Menu } from "@mui/icons-material";
+import AccountsDisplay from "../components/AccountsDisplay/AccountsDisplay";
+import SnowBallDisplay from "../components/SnowBallDisplay/SnowBallDisplay";
+import Account from "../types/Account";
 
 function App() {
-  const [account, setAccount] = useState<Account>(new Account());
+  let [accounts, updateAccounts] = useState<Account[]>([]);
+  const importFileInput = useRef<any>(null);
+
+  function exportAccounts(event: BaseSyntheticEvent) {
+    event.preventDefault();
+    let dataStr = JSON.stringify(accounts);
+    let dataUri =
+      "data:application/json;charset=utf-8," + encodeURIComponent(dataStr);
+    let exportFileDefaultName = "SnowBallAccounts.json";
+    let linkElement = document.createElement("a");
+
+    linkElement.setAttribute("href", dataUri);
+    linkElement.setAttribute("download", exportFileDefaultName);
+    linkElement.click();
+  }
+
+  function importAccounts(event: BaseSyntheticEvent) {
+    let rawData = event.target.files[0];
+
+    rawData
+      .text()
+      .then((value: string) => {
+        let parsedData = JSON.parse(value);
+        updateAccounts(parsedData);
+      })
+      .catch((err: any) => console.log(err));
+
+    event.target.value = null;
+  }
+
+  useEffect(() => {
+    let sortedAccounts = accounts.sort(
+      (firstAccount: Account, secondAccount: Account) =>
+        firstAccount.balanceDue <= secondAccount.balanceDue ? -1 : 1,
+    );
+    updateAccounts(sortedAccounts);
+  }, [accounts]);
 
   return (
-    <div className="flex w-screen h-screen">
-      <Card title="Account Input" className="w-3 m-2">
-        <AccountsForm account={account} setAccount={setAccount} />
-      </Card>
-
-      <Card title="Snowball Amoritization" className=" w-9 m-2">
-        <div>
-          <div className="flex justify-content-evenly w-full">
-            <h2>Total Debt: {account.totalDebt}</h2>
-            <h2>Extra Payment Per Month: {account.extraPayment}</h2>
-          </div>
-          <Card className="flex flex-column gap-2">
-            <SnowballAmortizationTable account={account} />
-          </Card>
-        </div>
-      </Card>
-    </div>
+    <Container maxWidth="lg">
+      <Grid container rowSpacing={4} component={Card}>
+        <Grid item xs={12}>
+          <AppBar position="static">
+            <Toolbar>
+              <IconButton
+                size="large"
+                edge="start"
+                color="inherit"
+                sx={{ mr: 2 }}
+              >
+                <Menu />
+              </IconButton>
+              <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
+                SnowBall
+              </Typography>
+              <Button
+                color="inherit"
+                onClick={(e) => exportAccounts(e)}
+                endIcon={<Download />}
+              >
+                Export Accounts
+              </Button>
+              <Button
+                color="inherit"
+                onClick={() => importFileInput.current.click()}
+                endIcon={<Upload />}
+              >
+                Import Accounts
+              </Button>
+              <input
+                ref={importFileInput}
+                type="file"
+                style={{ display: "none" }}
+                onChange={(e) => importAccounts(e)}
+              />
+            </Toolbar>
+          </AppBar>
+        </Grid>
+        <Grid item xs={12}>
+          <AccountsDisplay
+            accounts={accounts}
+            updateAccounts={updateAccounts}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <AppBar position="static">
+            <Toolbar>
+              <Typography
+                variant="h6"
+                align="justify"
+                component="div"
+                sx={{ flexGrow: 1 }}
+              >
+                SnowBall Amoritization
+              </Typography>
+            </Toolbar>
+          </AppBar>
+        </Grid>
+        <Grid item xs={12}>
+          <SnowBallDisplay accounts={accounts} />
+        </Grid>
+      </Grid>
+    </Container>
   );
 }
 

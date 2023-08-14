@@ -11,9 +11,10 @@
     "lint:fix": "eslint --fix"
   },
   "dependencies": {
-    "primeflex": "^3.2.1",
-    "primeicons": "^6.0.1",
-    "primereact": "^9.6.0",
+    "@emotion/react": "^11.8.2",
+    "@emotion/styled": "^11.8.1",
+    "@mui/icons-material": "^5.5.0",
+    "@mui/material": "^5.5.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
