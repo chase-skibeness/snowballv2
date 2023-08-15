@@ -58,11 +58,9 @@ export default function SnowBallAmortizationTable({
       );
     });
 
-    let smallestAccount = appliedInterestAccountArray
-      .filter((account) => account.balanceDue > 0)
-      .sort((firstBalance, secondBalance) =>
-        firstBalance.balanceDue <= secondBalance.balanceDue ? -1 : 1,
-      )[0];
+    let accountToPay = appliedInterestAccountArray.filter(
+      (account) => account.balanceDue > 0,
+    )[0];
 
     let paidOffAccountBonus = appliedInterestAccountArray
       .filter((account) => account.balanceDue <= 0)
@@ -80,8 +78,8 @@ export default function SnowBallAmortizationTable({
         let appliedPaymentBalance = 0;
 
         if (
-          account["name"] === smallestAccount["name"] &&
-          account.balanceDue === smallestAccount.balanceDue
+          account["name"] === accountToPay["name"] &&
+          account.balanceDue === accountToPay.balanceDue
         ) {
           appliedPaymentBalance = account.balanceDue - paymentWithBonus;
         } else {

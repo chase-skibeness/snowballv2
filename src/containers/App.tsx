@@ -6,15 +6,27 @@ import {
   Typography,
   Grid,
   Card,
+  Select,
+  MenuItem,
+  SelectChangeEvent,
+  InputLabel,
 } from "@mui/material";
 import { useState, useEffect, useRef, BaseSyntheticEvent } from "react";
 import { Upload, Download } from "@mui/icons-material";
 import AccountsDisplay from "../components/AccountsDisplay/AccountsDisplay";
 import SnowBallDisplay from "../components/SnowBallDisplay/SnowBallDisplay";
 import Account from "../types/Account";
+import {
+  SortType,
+  lowBalanceDueSortFunc,
+  highAPRSortFunc,
+  highMinPaymentDueSortFunc,
+  ratioSortFunc,
+} from "../types/SortType";
 
 function App() {
   let [accounts, updateAccounts] = useState<Account[]>([]);
+  let [sortType, setSortType] = useState<SortType | string>(SortType[1]);
   const importFileInput = useRef<any>(null);
 
   function exportAccounts(event: BaseSyntheticEvent) {
@@ -39,18 +51,38 @@ function App() {
         let parsedData = JSON.parse(value);
         updateAccounts(parsedData);
       })
-      .catch((err: any) => console.log(err));
+      .catch((err: any) => console.error(err));
 
     event.target.value = null;
   }
 
-  useEffect(() => {
-    let sortedAccounts = accounts.sort(
-      (firstAccount: Account, secondAccount: Account) =>
-        firstAccount.balanceDue <= secondAccount.balanceDue ? -1 : 1,
-    );
+  function sortAccounts() {
+    const sortedAccounts = [...accounts];
+    switch (sortType) {
+      case "lowPrincipal":
+        sortedAccounts.sort(lowBalanceDueSortFunc);
+        break;
+      case "highAPR":
+        sortedAccounts.sort(highAPRSortFunc);
+        break;
+      case "highMinPayment":
+        sortedAccounts.sort(highMinPaymentDueSortFunc);
+        break;
+      case "lowPrincipalPaymentRatio":
+        sortedAccounts.sort(ratioSortFunc);
+        break;
+    }
     updateAccounts(sortedAccounts);
-  }, [accounts]);
+  }
+
+  useEffect(() => {
+    sortAccounts();
+  }, [accounts, sortType]);
+
+  const handleSortTypeSelect = (event: SelectChangeEvent) => {
+    //@ts-ignore events man, they always throw errors
+    setSortType(SortType[event.target.value]);
+  };
 
   return (
     <Container maxWidth="xl">
@@ -101,6 +133,31 @@ function App() {
               >
                 SnowBall Amoritization Table
               </Typography>
+              <InputLabel
+                id="snowball-select-helper-label"
+                sx={{ color: "white" }}
+              >
+                Snowball Type:
+              </InputLabel>
+              <Select
+                value={SortType[sortType as SortType]}
+                label="Snowball type"
+                labelId="snowball-select-helper-label"
+                onChange={handleSortTypeSelect}
+                sx={{ color: "white", m: 1 }}
+                variant="standard"
+              >
+                <MenuItem value={SortType.lowPrincipal}>
+                  Low Principal First
+                </MenuItem>
+                <MenuItem value={SortType.highAPR}>High APR First</MenuItem>
+                <MenuItem value={SortType.highMinPayment}>
+                  High Min Payment First
+                </MenuItem>
+                <MenuItem value={SortType.lowPrincipalPaymentRatio}>
+                  Low Ratio First
+                </MenuItem>
+              </Select>
             </Toolbar>
           </AppBar>
         </Grid>
