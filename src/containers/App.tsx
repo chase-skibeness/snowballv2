@@ -4,19 +4,11 @@ import {
   Toolbar,
   Button,
   Typography,
-  IconButton,
   Grid,
   Card,
-  Input,
 } from "@mui/material";
-import {
-  useState,
-  useEffect,
-  useRef,
-  BaseSyntheticEvent,
-  MutableRefObject,
-} from "react";
-import { Upload, Download, Menu } from "@mui/icons-material";
+import { useState, useEffect, useRef, BaseSyntheticEvent } from "react";
+import { Upload, Download } from "@mui/icons-material";
 import AccountsDisplay from "../components/AccountsDisplay/AccountsDisplay";
 import SnowBallDisplay from "../components/SnowBallDisplay/SnowBallDisplay";
 import Account from "../types/Account";
@@ -61,21 +53,13 @@ function App() {
   }, [accounts]);
 
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="xl">
       <Grid container rowSpacing={4} component={Card}>
         <Grid item xs={12}>
           <AppBar position="static">
             <Toolbar>
-              <IconButton
-                size="large"
-                edge="start"
-                color="inherit"
-                sx={{ mr: 2 }}
-              >
-                <Menu />
-              </IconButton>
               <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
-                SnowBall
+                Snowball It!
               </Typography>
               <Button
                 color="inherit"
@@ -115,7 +99,7 @@ function App() {
                 component="div"
                 sx={{ flexGrow: 1 }}
               >
-                SnowBall Amoritization
+                SnowBall Amoritization Table
               </Typography>
             </Toolbar>
           </AppBar>
