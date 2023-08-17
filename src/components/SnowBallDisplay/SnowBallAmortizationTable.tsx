@@ -76,25 +76,40 @@ export default function SnowBallAmortizationTable({
           (paidOffAccountBonus ? paidOffAccountBonus : 0);
 
         let appliedPaymentBalance = 0;
-
         if (
           account["name"] === accountToPay["name"] &&
           account.balanceDue === accountToPay.balanceDue
         ) {
-          appliedPaymentBalance = account.balanceDue - paymentWithBonus;
+          if (account.balanceDue < paymentWithBonus) {
+            appliedPaymentBalance = 0;
+            let remainder = paymentWithBonus - account.balanceDue;
+            let payForwardIndex = index + 1;
+            while (
+              remainder > 0 &&
+              payForwardIndex < appliedInterestAccountArray.length
+            ) {
+              if (
+                appliedInterestAccountArray[payForwardIndex].balanceDue <
+                remainder
+              ) {
+                appliedInterestAccountArray[payForwardIndex].balanceDue = 0;
+                payForwardIndex++;
+              } else {
+                appliedInterestAccountArray[payForwardIndex].balanceDue -=
+                  remainder;
+              }
+              remainder -=
+                appliedInterestAccountArray[payForwardIndex].balanceDue;
+            }
+          } else {
+            appliedPaymentBalance = account.balanceDue - paymentWithBonus;
+          }
         } else {
-          appliedPaymentBalance = account.balanceDue - payment;
-        }
-
-        if (
-          appliedPaymentBalance < 0 &&
-          appliedInterestAccountArray[index + 1]
-        ) {
-          appliedInterestAccountArray[index + 1].balanceDue =
-            appliedInterestAccountArray[index + 1].balanceDue +
-            appliedPaymentBalance;
-
-          appliedPaymentBalance = 0;
+          if (account.balanceDue > 0) {
+            appliedPaymentBalance = account.balanceDue - payment;
+          } else {
+            appliedPaymentBalance = 0;
+          }
         }
 
         return new Account(
